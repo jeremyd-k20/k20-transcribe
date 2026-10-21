@@ -9,7 +9,6 @@ st.title("YouTube Career Interview Transcriber")
 url = st.text_input("Enter YouTube Video URL:")
 
 def generate_transcript_from_youtube(video_url):
-    # Construct a FileData part specifically for YouTube URLs
     video_part = types.Part(
         file_data=types.FileData(file_uri=video_url)
     )
@@ -19,8 +18,8 @@ def generate_transcript_from_youtube(video_url):
         "Please transcribe this video accurately. Format the transcript with clear speaker labels (e.g., Interviewer, Guest) and natural paragraph breaks."
     ]
     
-    # Try primary model first, fallback to flash-lite if busy
-    models_to_try = ['gemini-3.8-flash', 'gemini-3.5-flash-lite']
+    # Prioritizes flash-lite for higher throughput
+    models_to_try = ['gemini-3.5-flash-lite', 'gemini-3.8-flash']
     
     for model_name in models_to_try:
         for attempt in range(1, 3):
@@ -31,17 +30,18 @@ def generate_transcript_from_youtube(video_url):
                 )
                 return response
             except Exception as e:
-                if "503" in str(e) or "UNAVAILABLE" in str(e):
-                    time.sleep(2)
+                # If experiencing rate limits or traffic spikes, wait briefly and retry/switch
+                if "503" in str(e) or "429" in str(e) or "UNAVAILABLE" in str(e):
+                    time.sleep(3)
                     continue
                 else:
                     raise e
 
-    raise Exception("All API models are currently experiencing high traffic. Please try again in 1 minute.")
+    raise Exception("API quotas are currently limit-reached or models are busy. Please try again later.")
 
 if st.button("Generate Transcript") and url:
     try:
-        with st.spinner("Gemini is fetching and analyzing the video..."):
+        with st.spinner("Gemini Flash-Lite is processing the video..."):
             response = generate_transcript_from_youtube(url)
 
         st.subheader("Transcript")
