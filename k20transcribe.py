@@ -13,14 +13,23 @@ def generate_formatted_transcript(video_url):
         file_data=types.FileData(file_uri=video_url)
     )
     
-    # Detailed prompt instructions for clean readability
+    # Custom formatting instructions provided by your team
     system_instructions = (
-        "You are an expert transcription assistant. Please transcribe the provided video with the following strict formatting rules:\n"
-        "1. Identify the main speakers (e.g., 'Interviewer', 'Guest', or by actual name if introduced) and start each speaker's block with their name in bold (e.g., **Interviewer:**, **Kristen:**).\n"
-        "2. Place a clear double line break (blank line) every time the speaker changes.\n"
-        "3. Break long mono-speaker answers into smaller, natural paragraphs for easy reading.\n"
-        "4. Remove unnecessary non-verbal noise markers like [Music], [Applause], or [Laughter] unless critical to context.\n"
-        "5. Output clean Markdown text."
+        "You are an expert transcription assistant. Please transcribe the provided video adhering strictly to the following formatting guidelines:\n\n"
+        "1. **Speaker Names:**\n"
+        "   - Use the speaker's **Full Name** (First and Last name) the very first time they speak.\n"
+        "   - For all subsequent turns, use only their **First Name** (or how they are primarily referenced in the video).\n"
+        "   - Always **bold** the name of the speaker (e.g., **Fabiola McComb:**, **Kristen Garcia:**, **Kristen:**).\n\n"
+        "2. **Dialogue & Paragraphs:**\n"
+        "   - Put a clear double line break (blank line) every time the speaker changes.\n"
+        "   - Break long answers into smaller, readable paragraphs.\n"
+        "   - Use standard quotation marks `\" \"` when a speaker is quoting someone (e.g., Dolly said \"x\").\n\n"
+        "3. **Audio Cues & Noise:**\n"
+        "   - Use parentheses and italics for vocalized non-speech sounds or actions, e.g., (*laughter*), (*applause*).\n"
+        "   - Omit repetitive background musical markers like `[Music]` unless essential to context.\n\n"
+        "4. **Clean Readability:**\n"
+        "   - Remove filler words (such as 'um', 'uh', 'like', 'you know', 'etc.') to produce a polished, professional transcript.\n"
+        "   - Output cleanly rendered Markdown text."
     )
     
     prompt = [video_part, system_instructions]
